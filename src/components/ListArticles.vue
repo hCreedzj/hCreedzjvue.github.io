@@ -1,31 +1,85 @@
 <template>
   <main class="list-articles">
     <div class="list-articles__container">
+      <SearchForm class="list-articles__search-form" @search="onSearch"/>
       <div class="list-articles__list">
         <CardArticle
-          v-for="(item, index) in newsList"
-          :key="index"
+          v-for="item in newsList"
+          :key="item.id"
+          :id="item.id"
           :title="item.title"
-          :description="item.description"
+          :description="item.body"
           class="list-articles__card"
         />
       </div>
+      <ThePaginator
+        :page="page"
+        :totalPages="totalPages"
+        @setPage="setPages"
+        class="list-articles__paginator"
+      />
     </div>
   </main>
 </template>
 
 <script>
 import CardArticle from "@/components/card/CardArticle.vue";
-import newsList from "@/json/news.json";
+import ThePaginator from "@/components/ThePaginator.vue";
+import SearchForm from "@/components/SearchForm.vue";
 
 export default {
   components: {
     CardArticle,
+    ThePaginator,
+    SearchForm,
   },
   data() {
     return {
-      newsList: newsList,
+      newsList: [],
+      limit: 10,
+      page: 1,
+      totalCount: 1,
+      totalPages: 1,
+      search: "",
     };
+  },
+  methods: {
+    getNewsList(page = 1) {
+      const params = {
+        limit: this.limit,
+        skip: this.limit * (page - 1),
+      };
+      if (this.search) params.q = this.search;
+      const url = this.search
+        ? "https://dummyjson.com/posts/search"
+        : "https://dummyjson.com/posts";
+
+      this.$axios(url, {
+        params: params,
+      }).then((response) => {
+        if (response?.data?.posts) {
+          this.newsList = response.data.posts;
+          this.page = page;
+          this.totalCount = response.data.total;
+          this.totalPages = Math.ceil(this.totalCount / this.limit);
+        }
+      });
+    },
+    setPages(page) {
+      this.getNewsList(page);
+    },
+    onSearch(search) {
+      this.$router
+        .push({ query: search ? { search: search } : {} })
+        .then(() => {
+          this.search = this.$route.query.search;
+          this.getNewsList();
+        });
+    },
+  },
+  created() {
+    if (this.$route.query.search) this.search = this.$route.query.search;
+    this.getNewsList();
   },
 };
 </script>
@@ -36,9 +90,11 @@ export default {
   &__container {
     .container();
   }
+  &__search-form {
+    margin-bottom: 20px;
+  }
   &__card {
     margin-bottom: 15px;
   }
 }
-
 </style>

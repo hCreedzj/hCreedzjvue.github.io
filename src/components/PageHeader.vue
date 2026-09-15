@@ -10,30 +10,14 @@
       </div>
 
       <nav class="page-header__nav">
-        <button
-          type="button"
+        <RouterLink
+          v-for="link in links"
+          :key="link.path"
+          :to="link.path"
           class="page-header__nav-item"
-          :class="{ 'page-header__nav-item--active': activeTab === 'home' }"
-          @click="setTab('home')"
         >
-          Главная
-        </button>
-        <button
-          type="button"
-          class="page-header__nav-item"
-          :class="{ 'page-header__nav-item--active': activeTab === 'rules' }"
-          @click="setTab('rules')"
-        >
-          Правила
-        </button>
-        <button
-          type="button"
-          class="page-header__nav-item"
-          :class="{ 'page-header__nav-item--active': activeTab === 'contacts' }"
-          @click="setTab('contacts')"
-        >
-          Контакты
-        </button>
+          {{ link.title }}
+        </RouterLink>
       </nav>
     </div>
   </header>
@@ -46,18 +30,32 @@ export default {
   components: {
     SvgLogo,
   },
-  emits: ["setTab"],
-  props: {
-    activeTab: {
-      type: String,
-      default: "",
-    },
+  emits: [],
+  props: {},
+  data() {
+    return {
+      links: [
+        {
+          title: "Главная",
+          path: "/",
+        },
+        {
+          title: "Правила",
+          path: "/rules",
+        },
+        {
+          title: "Контакты",
+          path: "/contacts",
+          query: {
+            addres: "г. Томск, ул. Красноармейская, 146",
+            email: "idat@tusur.ru",
+            phone: "(3822) 90-72-56"
+          }
+        },
+      ],
+    };
   },
-  methods: {
-    setTab(value) {
-        this.$emit("setTab", value)
-    }
-  }
+  methods: {},
 };
 </script>
 

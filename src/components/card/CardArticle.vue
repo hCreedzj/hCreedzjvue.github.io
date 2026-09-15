@@ -1,7 +1,12 @@
 <template>
   <div class="card-article">
     <h4 class="card-article__title">
+      <RouterLink
+        :to="{ name: 'blogArticle', params: { id } }"
+        class="card-article__link"
+      >
         {{ title }}
+      </RouterLink>
     </h4>
     <p class="card-article__description">
       {{ description }}
@@ -12,13 +17,20 @@
 <script>
 export default {
   props: {
+    id: {
+      type: [Number, String],
+      default: "",
+      requred: true,
+    },
     title: {
       type: String,
       default: "",
+      requred: true,
     },
     description: {
       type: String,
       default: "",
+      requred: true,
     },
   },
 };
@@ -36,6 +48,10 @@ export default {
     color: @light_orange;
     font-size: 20px;
     cursor: pointer;
+  }
+  .card-article__link {
+    text-decoration: none;
+    color: inherit;
   }
   &__description {
     margin: 0 0 10px;
